@@ -185,10 +185,10 @@ class Command(BaseCommand):
             
             # Check if it looks like a Minecraft version
             patterns = [
-                r'^(\d+\.\d+\.\d+)$',  # 1.2.3
-                r'^(\d+\.\d+)$',       # 1.2
-                r'^mc(\d+\.\d+\.\d+)$', # mc1.2.3
-                r'^mc(\d+\.\d+)$',     # mc1.2
+                r'^(\d+\.\d+\.\d+[ab]?\d*)$',  # 1.2.3, 1.2.3a, 1.2.3b, 1.2.3a1, 1.2.3b2
+                r'^(\d+\.\d+[ab]?\d*)$',       # 1.2, 1.2a, 1.2b, 1.2a1, 1.2b2
+                r'^mc(\d+\.\d+\.\d+[ab]?\d*)$', # mc1.2.3, mc1.2.3a, mc1.2.3b
+                r'^mc(\d+\.\d+[ab]?\d*)$',     # mc1.2, mc1.2a, mc1.2b
             ]
             
             for pattern in patterns:
@@ -198,10 +198,10 @@ class Command(BaseCommand):
         
         # If not found in the expected position, try to find it anywhere in the path
         patterns = [
-            r'(\d+\.\d+\.\d+)',  # 1.2.3
-            r'(\d+\.\d+)',       # 1.2
-            r'mc(\d+\.\d+\.\d+)', # mc1.2.3
-            r'mc(\d+\.\d+)',     # mc1.2
+            r'(\d+\.\d+\.\d+[ab]?\d*)',  # 1.2.3, 1.2.3a, 1.2.3b, 1.2.3a1, 1.2.3b2
+            r'(\d+\.\d+[ab]?\d*)',       # 1.2, 1.2a, 1.2b, 1.2a1, 1.2b2
+            r'mc(\d+\.\d+\.\d+[ab]?\d*)', # mc1.2.3, mc1.2.3a, mc1.2.3b
+            r'mc(\d+\.\d+[ab]?\d*)',     # mc1.2, mc1.2a, mc1.2b
         ]
         
         for pattern in patterns:

@@ -130,16 +130,29 @@ def mod_detail(request, mod_slug):
     else:
         ip_address = request.META.get('REMOTE_ADDR', '0.0.0.0')
     
+    # Check if this IP should increment the relevance count (before recording the view)
+    should_increment = ModView.should_increment_relevance(mod, ip_address)
+    
     # Always record the view
     ModView.record_view(mod, ip_address)
     
-    # Only increment relevance count if this IP hasn't viewed in the last 24 hours
-    if ModView.should_increment_relevance(mod, ip_address):
+    # Increment relevance count if this IP hasn't viewed in the last 24 hours
+    if should_increment:
         mod.relevance_count += 1
         mod.save(update_fields=['relevance_count'])
     
-    # Get versions with pagination
+    # Get versions with filtering
     versions = mod.versions.all()
+    
+    # Filter by Minecraft version if specified
+    minecraft_filter = request.GET.get('minecraft_version', '')
+    if minecraft_filter:
+        versions = versions.filter(minecraft_version__icontains=minecraft_filter)
+    
+    # Get unique Minecraft versions for filter dropdown
+    minecraft_versions = mod.versions.exclude(minecraft_version__isnull=True).exclude(minecraft_version='').values_list('minecraft_version', flat=True).distinct().order_by('minecraft_version')
+    
+    # Pagination
     paginator = Paginator(versions, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -147,6 +160,8 @@ def mod_detail(request, mod_slug):
     context = {
         'mod': mod,
         'page_obj': page_obj,
+        'minecraft_versions': minecraft_versions,
+        'selected_minecraft_version': minecraft_filter,
     }
     return render(request, 'mods/mod_detail.html', context)
 
@@ -258,6 +273,7 @@ def edit_mod(request, mod_slug):
         name = request.POST.get('name', '').strip()
         author = request.POST.get('author', '').strip()
         description = request.POST.get('description', '')
+        archive_url = request.POST.get('archive_url', '').strip()
         
         # Validate name
         if not name:
@@ -284,6 +300,7 @@ def edit_mod(request, mod_slug):
         mod.name = name
         mod.author = author
         mod.description = description
+        mod.archive_url = archive_url
         mod.save()
         
         messages.success(request, f'Mod "{mod.name}" updated successfully!')

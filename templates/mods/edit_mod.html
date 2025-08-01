@@ -66,6 +66,13 @@
                 <p class="text-xs text-gray-400 mt-1">Describe what this mod does and its features</p>
             </div>
             
+            <!-- Archive.org URL Section -->
+            <div class="mb-6">
+                <label for="archive_url" class="block text-sm font-medium text-gray-300 mb-2">Archive.org Link</label>
+                <input type="url" name="archive_url" id="archive_url" value="{{ mod.archive_url|default:'' }}" class="minecraft-input w-full px-3 py-2 rounded-md" placeholder="https://web.archive.org/web/...">
+                <p class="text-xs text-gray-400 mt-1">Link to the mod's page on archive.org (optional)</p>
+            </div>
+            
             <!-- Form Actions -->
             <div class="flex justify-end space-x-4">
                 <a href="{% url 'mods:mod_detail' mod.slug %}" class="minecraft-button px-4 py-2 rounded-md">

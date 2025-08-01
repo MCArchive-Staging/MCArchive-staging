@@ -150,12 +150,23 @@ class Command(BaseCommand):
                 # Properly capitalize mod name (e.g., "abyssal craft" → "Abyssal Craft")
                 mod_name_capitalized = ' '.join(word.capitalize() for word in mod_name.split())
                 
-                # Create or get mod (no description - set manually)
+                # Create or get mod (with README content as description)
                 mod_key = mod_name_capitalized
                 if mod_key not in seen_mods:
+                    # Try to fetch README content for description
+                    readme_content = None
+                    try:
+                        # Create a temporary mod object to use the fetch_readme_content method
+                        temp_mod = Mod(name=mod_name_capitalized)
+                        # We'll need to get the mod folder path from the current line
+                        mod_folder = f"{category_name}/{letter_folder}/{mod_name}"
+                        readme_content = self._fetch_readme_content(mod_folder)
+                    except Exception:
+                        pass
+                    
                     mod, created = Mod.objects.get_or_create(
                         name=mod_name_capitalized,
-                        defaults={}  # No description - set manually
+                        defaults={'description': readme_content or ''}
                     )
                     if created:
                         mods_created += 1
@@ -234,10 +245,10 @@ class Command(BaseCommand):
             
             # Check if it looks like a Minecraft version
             patterns = [
-                r'^(\d+\.\d+\.\d+)$',  # 1.2.3
-                r'^(\d+\.\d+)$',       # 1.2
-                r'^mc(\d+\.\d+\.\d+)$', # mc1.2.3
-                r'^mc(\d+\.\d+)$',     # mc1.2
+                r'^(\d+\.\d+\.\d+[ab]?\d*)$',  # 1.2.3, 1.2.3a, 1.2.3b, 1.2.3a1, 1.2.3b2
+                r'^(\d+\.\d+[ab]?\d*)$',       # 1.2, 1.2a, 1.2b, 1.2a1, 1.2b2
+                r'^mc(\d+\.\d+\.\d+[ab]?\d*)$', # mc1.2.3, mc1.2.3a, mc1.2.3b
+                r'^mc(\d+\.\d+[ab]?\d*)$',     # mc1.2, mc1.2a, mc1.2b
             ]
             
             for pattern in patterns:
@@ -247,10 +258,10 @@ class Command(BaseCommand):
         
         # If not found in the expected position, try to find it anywhere in the path
         patterns = [
-            r'(\d+\.\d+\.\d+)',  # 1.2.3
-            r'(\d+\.\d+)',       # 1.2
-            r'mc(\d+\.\d+\.\d+)', # mc1.2.3
-            r'mc(\d+\.\d+)',     # mc1.2
+            r'(\d+\.\d+\.\d+[ab]?\d*)',  # 1.2.3, 1.2.3a, 1.2.3b, 1.2.3a1, 1.2.3b2
+            r'(\d+\.\d+[ab]?\d*)',       # 1.2, 1.2a, 1.2b, 1.2a1, 1.2b2
+            r'mc(\d+\.\d+\.\d+[ab]?\d*)', # mc1.2.3, mc1.2.3a, mc1.2.3b
+            r'mc(\d+\.\d+[ab]?\d*)',     # mc1.2, mc1.2a, mc1.2b
         ]
         
         for pattern in patterns:
@@ -278,4 +289,62 @@ class Command(BaseCommand):
         elif 'mcaddon' in path_lower:
             return 'Bedrock'
         
-        return None 
+        return None
+    
+    def _fetch_readme_content(self, mod_folder):
+        """Fetch README content from the bucket for a given mod folder using FilesIndexWithMeta.txt"""
+        import requests
+        
+        # Extract mod name from folder path
+        parts = mod_folder.split('/')
+        if len(parts) < 3:
+            return None
+            
+        mod_name = parts[2]  # The actual mod name
+        
+        # Get README.md location from FilesIndexWithMeta.txt
+        readme_path = self._find_readme_in_meta_file(mod_name)
+        
+        if readme_path:
+            try:
+                url = f"https://mcmodarchive.femtopedia.de/{readme_path}"
+                response = requests.get(url, timeout=10)
+                if response.status_code == 200:
+                    content = response.text
+                    
+                    # Clean up the content (remove HTML if present, limit length)
+                    if len(content) > 2000:
+                        content = content[:2000] + "..."
+                    
+                    return content
+                    
+            except Exception:
+                pass
+        
+        return None
+    
+    def _find_readme_in_meta_file(self, mod_name):
+        """Find README.md file path for a mod in FilesIndexWithMeta.txt"""
+        import requests
+        
+        try:
+            meta_url = "https://mcmodarchive.femtopedia.de/FilesIndexWithMeta.txt"
+            response = requests.get(meta_url, timeout=30)
+            
+            if response.status_code == 200:
+                lines = response.text.split('\n')
+                
+                # Look for README.md files in the mod's folder
+                for line in lines:
+                    if 'README.md' in line and mod_name.lower() in line.lower():
+                        # Extract the file path
+                        parts = line.split('/')
+                        if len(parts) >= 3:
+                            # Check if this is the right mod folder
+                            if parts[2].lower() == mod_name.lower():
+                                return line.strip()
+            
+        except Exception:
+            pass
+        
+        return None
