@@ -11,7 +11,7 @@
             <span class="mx-2">/</span>
             <a href="{% url 'mods:browse_all' %}" class="hover:text-gray-300">Browse All</a>
             <span class="mx-2">/</span>
-            <a href="{% url 'mods:mod_detail' mod.name %}" class="hover:text-gray-300">{{ mod.name }}</a>
+            <a href="{% url 'mods:mod_detail' mod.slug %}" class="hover:text-gray-300">{{ mod.name }}</a>
             <span class="mx-2">/</span>
             <span class="text-gray-300">Edit</span>
         </nav>
@@ -68,7 +68,7 @@
             
             <!-- Form Actions -->
             <div class="flex justify-end space-x-4">
-                <a href="{% url 'mods:mod_detail' mod.name %}" class="minecraft-button px-4 py-2 rounded-md">
+                <a href="{% url 'mods:mod_detail' mod.slug %}" class="minecraft-button px-4 py-2 rounded-md">
                     Cancel
                 </a>
                 <button type="submit" class="minecraft-button px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-md">

@@ -47,7 +47,7 @@
                         </div>
                     </div>
                     {% if user.is_authenticated %}
-                    <a href="{% url 'mods:edit_mod' mod.name %}" class="minecraft-button inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
+                    <a href="{% url 'mods:edit_mod' mod.slug %}" class="minecraft-button inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
                         <i class="fas fa-edit mr-2"></i>
                         Edit
                     </a>
@@ -132,7 +132,7 @@
                             {{ version.created_at|date:"M j, Y" }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{% url 'mods:download_version' mod.name version.id %}" 
+                            <a href="{% url 'mods:download_version' mod.slug version.id %}" 
                                target="_blank"
                                class="minecraft-button inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md">
                                 <i class="fas fa-download mr-2"></i>
@@ -141,7 +141,7 @@
                         </td>
                         {% if user.is_authenticated %}
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{% url 'mods:edit_version' mod.name version.id %}" 
+                            <a href="{% url 'mods:edit_version' mod.slug version.id %}" 
                                class="inline-flex items-center px-3 py-2 border border-gray-500 text-sm leading-4 font-medium rounded-md text-gray-200 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 <i class="fas fa-edit mr-2"></i>
                                 Edit

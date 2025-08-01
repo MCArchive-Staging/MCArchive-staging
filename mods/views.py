@@ -236,7 +236,7 @@ def api_search(request):
                 'name': mod.name,
                 'description': mod.description[:200] + '...' if len(mod.description) > 200 else mod.description,
                 'version_count': mod.version_count,
-                'url': f'/mods/{mod.name}/',
+                'url': f'/mods/{mod.slug}/',
             })
         
         return JsonResponse({
@@ -287,7 +287,7 @@ def edit_mod(request, mod_slug):
         mod.save()
         
         messages.success(request, f'Mod "{mod.name}" updated successfully!')
-        return redirect('mods:mod_detail', mod_slug=name)
+        return redirect('mods:mod_detail', mod_slug=mod.slug)
     
     context = {
         'mod': mod,
@@ -297,7 +297,7 @@ def edit_mod(request, mod_slug):
 @login_required
 def edit_version(request, mod_slug, version_id):
     """Edit version metadata for logged-in users"""
-    mod = get_object_or_404(Mod, name__iexact=mod_slug)
+    mod = get_object_or_404(Mod, slug=mod_slug)
     version = get_object_or_404(ModVersion, id=version_id, mod=mod)
     
     if request.method == 'POST':
@@ -317,7 +317,7 @@ def edit_version(request, mod_slug, version_id):
 
 def download_version(request, mod_slug, version_id):
     """Handle download clicks and increment download count"""
-    mod = get_object_or_404(Mod, name__iexact=mod_slug)
+    mod = get_object_or_404(Mod, slug=mod_slug)
     version = get_object_or_404(ModVersion, id=version_id, mod=mod)
     
     # Increment download count
