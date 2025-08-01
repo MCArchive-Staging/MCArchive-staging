@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - MCArchive{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full">
+        <!-- Login Card -->
+        <div class="minecraft-card border-4 border-green-500 p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-200 mb-2">Welcome Back</h2>
+                <p class="text-gray-400">Sign in to your MCArchive account</p>
+            </div>
+
+            {% if form.errors %}
+            <div class="mb-6 p-4 bg-red-900 border border-red-500 text-red-200">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <span>Invalid username or password. Please try again.</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Username Field -->
+                <div>
+                    <label for="id_username" class="block text-sm font-medium text-gray-300 mb-2">
+                        Username
+                    </label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" 
+                               name="username" 
+                               id="id_username" 
+                               required 
+                               class="minecraft-input w-full pl-12 pr-4 py-3 text-gray-200"
+                               placeholder="Enter your username">
+                    </div>
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                    <label for="id_password" class="block text-sm font-medium text-gray-300 mb-2">
+                        Password
+                    </label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" 
+                               name="password" 
+                               id="id_password" 
+                               required 
+                               class="minecraft-input w-full pl-12 pr-4 py-3 text-gray-200"
+                               placeholder="Enter your password">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit" 
+                            class="minecraft-button w-full py-3 text-lg font-semibold">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Sign In
+                    </button>
+                </div>
+            </form>
+
+            <!-- Additional Links -->
+            <div class="mt-8 text-center">
+                <p class="text-gray-400 text-sm">
+                    Don't have an account? 
+                    <a href="#" class="text-green-400 hover:text-green-300 font-medium">
+                        Contact an administrator
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="text-center mt-6">
+            <a href="{% url 'mods:index' %}" 
+               class="text-green-400 hover:text-green-300 font-medium flex items-center justify-center">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to MCArchive
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

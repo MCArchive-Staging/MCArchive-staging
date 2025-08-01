@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Version - {{ mod.name }} - MC Mod Archive{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-400 mb-6">
+        <a href="{% url 'mods:index' %}" class="hover:text-gray-300">Home</a>
+        <span class="mx-2">/</span>
+        <a href="{% url 'mods:mod_detail' mod.name %}" class="hover:text-gray-300">{{ mod.name }}</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-300">Edit Version</span>
+    </nav>
+
+    <div class="minecraft-card p-6">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-200 mb-2">Edit Version Metadata</h1>
+            <p class="text-gray-400">Mod: <strong>{{ mod.name }}</strong></p>
+            <p class="text-gray-400">File: <strong>{{ version.file_name }}</strong></p>
+        </div>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Version Number -->
+                <div>
+                    <label for="version_number" class="block text-sm font-medium text-gray-300 mb-2">
+                        Version Number
+                    </label>
+                    <input type="text" 
+                           id="version_number" 
+                           name="version_number" 
+                           value="{{ version.version_number|default:'' }}"
+                           class="minecraft-input w-full px-3 py-2 rounded-md shadow-sm"
+                           placeholder="e.g., 1.0.0">
+                    <p class="mt-1 text-sm text-gray-400">The version number of this mod release</p>
+                </div>
+
+                <!-- Platform -->
+                <div>
+                    <label for="platform" class="block text-sm font-medium text-gray-300 mb-2">
+                        Platform
+                    </label>
+                    <select id="platform" 
+                            name="platform" 
+                            class="minecraft-input w-full px-3 py-2 rounded-md shadow-sm">
+                        <option value="">Select Platform</option>
+                        <option value="Forge" {% if version.platform == 'Forge' %}selected{% endif %}>Forge</option>
+                        <option value="Fabric" {% if version.platform == 'Fabric' %}selected{% endif %}>Fabric</option>
+                        <option value="Bukkit" {% if version.platform == 'Bukkit' %}selected{% endif %}>Bukkit</option>
+                        <option value="Spigot" {% if version.platform == 'Spigot' %}selected{% endif %}>Spigot</option>
+                        <option value="Client" {% if version.platform == 'Client' %}selected{% endif %}>Client</option>
+                        <option value="Server" {% if version.platform == 'Server' %}selected{% endif %}>Server</option>
+                        <option value="Universal" {% if version.platform == 'Universal' %}selected{% endif %}>Universal</option>
+                    </select>
+                    <p class="mt-1 text-sm text-gray-400">The modloader or installation type</p>
+                </div>
+
+                <!-- Minecraft Version -->
+                <div>
+                    <label for="minecraft_version" class="block text-sm font-medium text-gray-300 mb-2">
+                        Minecraft Version
+                    </label>
+                    <input type="text" 
+                           id="minecraft_version" 
+                           name="minecraft_version" 
+                           value="{{ version.minecraft_version|default:'' }}"
+                           class="minecraft-input w-full px-3 py-2 rounded-md shadow-sm"
+                           placeholder="e.g., 1.19.2">
+                    <p class="mt-1 text-sm text-gray-400">The Minecraft version this mod is compatible with</p>
+                </div>
+
+                <!-- File Path Info (Read-only) -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        File Path
+                    </label>
+                    <div class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-sm text-gray-300">
+                        {{ version.file_path }}
+                    </div>
+                    <p class="mt-1 text-sm text-gray-400">Original file path (read-only)</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-600">
+                <a href="{% url 'mods:mod_detail' mod.name %}" 
+                   class="minecraft-button px-4 py-2 text-sm font-medium rounded-md">
+                    Cancel
+                </a>
+                <button type="submit" 
+                        class="minecraft-button px-4 py-2 text-sm font-medium rounded-md bg-blue-600 hover:bg-blue-700">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

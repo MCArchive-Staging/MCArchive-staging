@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse All Mods - MCArchive Next{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-200 mb-4">Browse All Mods</h1>
+        <p class="text-gray-400">Discover and explore our complete collection of Minecraft mods</p>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="minecraft-card border border-green-500 p-6 mb-8">
+        <form method="GET" class="space-y-4">
+            <!-- Search Bar -->
+            <div class="flex flex-col lg:flex-row gap-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" name="search" value="{{ search }}" placeholder="Search mods by name, description, or author..." 
+                               class="minecraft-input w-full pl-10 pr-4 py-3">
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <select name="sort" class="minecraft-input px-4 py-3">
+                        <option value="relevance" {% if sort_by == 'relevance' %}selected{% endif %}>Sort by Popularity</option>
+                        <option value="downloads" {% if sort_by == 'downloads' %}selected{% endif %}>Sort by Downloads</option>
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Sort by Name</option>
+                        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Sort by Newest</option>
+                        <option value="versions" {% if sort_by == 'versions' %}selected{% endif %}>Sort by Versions</option>
+                    </select>
+                    <button type="submit" class="minecraft-button px-6 py-3">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Search Tips -->
+            {% if not search %}
+            <div class="text-sm text-gray-400 space-y-1">
+                <p><i class="fas fa-lightbulb mr-2"></i>Search by mod name, description, or author</p>
+                <p><i class="fas fa-sort mr-2"></i>Sort by popularity, downloads, name, date, or version count</p>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Results Info -->
+    <div class="flex justify-between items-center mb-6">
+        {% if search %}
+        <div>
+            <h2 class="text-2xl font-bold text-gray-200 mb-2">
+                Search Results for "{{ search }}"
+            </h2>
+            <p class="text-gray-400">
+                Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ total_mods }} result{{ total_mods|pluralize }}
+            </p>
+        </div>
+        <a href="{% url 'mods:browse_all' %}" class="minecraft-button px-4 py-2 text-sm">
+            <i class="fas fa-times mr-2"></i>Clear search
+        </a>
+        {% else %}
+        <div>
+            <h2 class="text-2xl font-bold text-gray-200 mb-2">
+                All Mods
+            </h2>
+            <p class="text-gray-400">
+                Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ total_mods }} mods
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Mods Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        {% for mod in page_obj %}
+                <a href="{% url 'mods:mod_detail' mod.name %}" 
+           class="group minecraft-card shadow-sm hover:shadow-lg transition-all duration-200 border border-green-500 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-start mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg mr-4 flex-shrink-0">
+                        {% if mod.logo %}
+                        <img src="{{ mod.logo }}" alt="{{ mod.name }} logo" class="w-full h-full object-cover">
+                        {% else %}
+                        {{ mod.name|first|upper }}
+                        {% endif %}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                            <h3 class="text-lg font-semibold text-gray-200 group-hover:text-green-400 transition-colors line-clamp-2">
+                                {{ mod.name }}
+                            </h3>
+                            <span class="text-sm text-gray-400">by {{ mod.author|default:"Unknown" }}</span>
+                        </div>
+                        {% if mod.description %}
+                        <p class="text-gray-300 text-sm line-clamp-2">{{ mod.description }}</p>
+                        {% else %}
+                        <p class="text-gray-400 text-sm">Click to view details and download</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex items-center justify-between pt-3 border-t border-gray-600">
+                    <div class="flex items-center text-green-400 text-sm font-medium">
+                        View mod <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="col-span-full text-center py-16">
+            <div class="text-gray-300 text-6xl mb-4">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No mods found</h3>
+            <p class="text-gray-500">
+                {% if search %}
+                No mods match your search criteria. Try adjusting your search terms.
+                {% else %}
+                No mods are available at the moment.
+                {% endif %}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="flex justify-center">
+        <nav class="flex items-center space-x-2">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" 
+               class="px-4 py-2 bg-gray-800 text-gray-300 hover:text-green-400 hover:bg-gray-700 border border-green-500 transition-colors">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <span class="px-4 py-2 bg-green-600 text-white border border-green-500">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" 
+                   class="px-4 py-2 bg-gray-800 text-gray-300 hover:text-green-400 hover:bg-gray-700 border border-green-500 transition-colors">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" 
+               class="px-4 py-2 bg-gray-800 text-gray-300 hover:text-green-400 hover:bg-gray-700 border border-green-500 transition-colors">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

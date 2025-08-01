@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}MCArchive Next - Discover Minecraft Mods{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="min-h-[60vh] flex items-center justify-center minecraft-card border-4 border-green-500">
+    <div class="text-center max-w-4xl mx-auto px-4">
+        <h1 class="text-5xl md:text-7xl font-bold text-gray-200 mb-6">
+            <br>
+            <span class="bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                MCArchive Next
+            </span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
+            Explore thousands of mods from the comprehensive archive
+        </p>
+        
+        <!-- Search Bar -->
+        <div class="max-w-2xl mx-auto mb-8">
+            <form action="{% url 'mods:browse_all' %}" method="GET" class="flex gap-3">
+                <div class="flex-1 relative">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" name="search" placeholder="Search for mods..." 
+                           class="minecraft-input w-full pl-12 pr-4 py-4 text-lg shadow-lg">
+                </div>
+                <button type="submit" class="minecraft-button px-8 py-4 font-semibold text-lg shadow-lg">
+                    Search
+                </button>
+            </form>
+        </div>
+        
+
+    </div>
+</div>
+
+<!-- Site Features -->
+<div class="py-16">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-200 mb-2">What MCArchive Next Offers</h2>
+            <p class="text-gray-400">Discover the features that make MCArchive Next your go-to mod browser</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Comprehensive Archive -->
+            <div class="minecraft-card border border-green-500 p-6 text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-2xl mx-auto mb-4">
+                    <i class="fas fa-archive"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-200 mb-3">Comprehensive Archive</h3>
+                <p class="text-gray-300 text-sm">Access thousands of Minecraft mods from the complete Femtopedia archive, all in one place.</p>
+            </div>
+
+            <!-- Powered by Femtopedia -->
+            <div class="minecraft-card border border-green-500 p-6 text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-2xl mx-auto mb-4">
+                    <i class="fas fa-server"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-200 mb-3">Powered by Femtopedia</h3>
+                <p class="text-gray-300 text-sm">All mod data is sourced from the reliable Femtopedia archive, ensuring quality and authenticity.</p>
+            </div>
+
+            <!-- Smart Search -->
+            <div class="minecraft-card border border-green-500 p-6 text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-2xl mx-auto mb-4">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-200 mb-3">Smart Search</h3>
+                <p class="text-gray-300 text-sm">Find mods quickly with our powerful search and browse functionality, including filtering by relevance and downloads.</p>
+            </div>
+
+            <!-- Community Driven -->
+            <div class="minecraft-card border border-green-500 p-6 text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-2xl mx-auto mb-4">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-200 mb-3">Community Driven</h3>
+                <p class="text-gray-300 text-sm">Logged-in users can contribute by editing mod descriptions, authors, and metadata to improve the archive.</p>
+            </div>
+
+            <!-- Real-time Stats -->
+            <div class="minecraft-card border border-green-500 p-6 text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-2xl mx-auto mb-4">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-200 mb-3">Real-time Stats</h3>
+                <p class="text-gray-300 text-sm">Track mod popularity with view counts and download statistics, updated in real-time as users interact with mods.</p>
+            </div>
+
+            <!-- Always Updated -->
+            <div class="minecraft-card border border-green-500 p-6 text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-2xl mx-auto mb-4">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-200 mb-3">Always Updated</h3>
+                <p class="text-gray-300 text-sm">Our system continuously scans for new mods and updates, ensuring you always have access to the latest content.</p>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="text-center mt-12">
+            <a href="{% url 'mods:browse_all' %}" class="minecraft-button inline-flex items-center px-8 py-4 text-lg font-semibold">
+                <i class="fas fa-rocket mr-3"></i>
+                Start Exploring Mods
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit {{ mod.name }} - MCArchive Next{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <nav class="text-sm text-gray-400 mb-4">
+            <a href="{% url 'mods:index' %}" class="hover:text-gray-300">Home</a>
+            <span class="mx-2">/</span>
+            <a href="{% url 'mods:browse_all' %}" class="hover:text-gray-300">Browse All</a>
+            <span class="mx-2">/</span>
+            <a href="{% url 'mods:mod_detail' mod.name %}" class="hover:text-gray-300">{{ mod.name }}</a>
+            <span class="mx-2">/</span>
+            <span class="text-gray-300">Edit</span>
+        </nav>
+        
+        <h1 class="text-3xl font-bold text-gray-200 mb-2">Edit {{ mod.name }}</h1>
+        <p class="text-gray-400">Update the mod's name, logo and description</p>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="minecraft-card p-6">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Mod Name Section -->
+            <div class="mb-6">
+                <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Mod Name</label>
+                <input type="text" name="name" id="name" value="{{ mod.name }}" class="minecraft-input w-full px-3 py-2 rounded-md" placeholder="Enter mod name...">
+                <p class="text-xs text-gray-400 mt-1">The display name for this mod</p>
+            </div>
+            
+            <!-- Author Section -->
+            <div class="mb-6">
+                <label for="author" class="block text-sm font-medium text-gray-300 mb-2">Author</label>
+                <input type="text" name="author" id="author" value="{{ mod.author|default:'' }}" class="minecraft-input w-full px-3 py-2 rounded-md" placeholder="Enter author name...">
+                <p class="text-xs text-gray-400 mt-1">The author/creator of this mod</p>
+            </div>
+            
+            <!-- Logo Section -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-300 mb-2">Mod Logo</label>
+                
+                <!-- Current Logo Preview -->
+                {% if mod.logo %}
+                <div class="mb-4">
+                    <p class="text-sm text-gray-400 mb-2">Current logo:</p>
+                    <img src="{{ mod.logo }}" alt="{{ mod.name }} logo" class="w-16 h-16 rounded-lg object-cover border border-gray-600">
+                </div>
+                {% endif %}
+                
+                <!-- Logo Upload -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Upload New Logo</label>
+                    <input type="file" name="logo_file" accept="image/*" class="minecraft-input block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-600 file:text-gray-200 hover:file:bg-gray-500">
+                    <p class="text-xs text-gray-400 mt-1">Upload an image file (PNG, JPG, etc.)</p>
+                </div>
+            </div>
+            
+            <!-- Description Section -->
+            <div class="mb-6">
+                <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+                <textarea name="description" id="description" rows="6" class="minecraft-input w-full px-3 py-2 rounded-md" placeholder="Enter a description for this mod...">{{ mod.description }}</textarea>
+                <p class="text-xs text-gray-400 mt-1">Describe what this mod does and its features</p>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-4">
+                <a href="{% url 'mods:mod_detail' mod.name %}" class="minecraft-button px-4 py-2 rounded-md">
+                    Cancel
+                </a>
+                <button type="submit" class="minecraft-button px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-md">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %} 

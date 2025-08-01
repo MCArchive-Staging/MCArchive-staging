@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Mods - MC Mod Archive{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-200 mb-4">Search Mods</h1>
+    
+    <!-- Search Form -->
+    <form method="GET" action="{% url 'mods:search' %}" class="minecraft-card p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="md:col-span-2">
+                <label for="q" class="block text-sm font-medium text-gray-300 mb-2">Search Query</label>
+                <input type="text" 
+                       id="q" 
+                       name="q" 
+                       value="{{ query }}" 
+                       placeholder="Enter mod name, description, or author..."
+                       class="minecraft-input w-full px-4 py-2">
+            </div>
+            <div>
+                <label for="category" class="block text-sm font-medium text-gray-300 mb-2">Category</label>
+                <select id="category" 
+                        name="category" 
+                        class="minecraft-input w-full px-4 py-2">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="sort" class="block text-sm font-medium text-gray-300 mb-2">Sort By</label>
+                <select id="sort" 
+                        name="sort" 
+                        class="minecraft-input w-full px-4 py-2">
+                    <option value="relevance" {% if sort_by == 'relevance' %}selected{% endif %}>Relevance</option>
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+                    <option value="versions" {% if sort_by == 'versions' %}selected{% endif %}>Most Versions</option>
+                </select>
+            </div>
+        </div>
+        <div class="mt-4 flex justify-end">
+            <button type="submit" 
+                    class="minecraft-button px-6 py-2 font-medium">
+                <i class="fas fa-search mr-2"></i>Search
+            </button>
+        </div>
+    </form>
+</div>
+
+{% if query %}
+<!-- Search Results -->
+<div class="mb-8">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-200">
+            Search Results for "{{ query }}"
+        </h2>
+        <div class="text-gray-400">
+            {{ result_count }} result{{ result_count|pluralize }}
+        </div>
+    </div>
+    
+    {% if page_obj %}
+    <!-- Results Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for mod in page_obj %}
+        <a href="{% url 'mods:mod_detail' mod.name %}" 
+           class="group minecraft-card shadow-sm hover:shadow-lg transition-all duration-200 border border-green-500 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-start mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg mr-4 flex-shrink-0">
+                        {% if mod.logo %}
+                        <img src="{{ mod.logo }}" alt="{{ mod.name }} logo" class="w-full h-full object-cover">
+                        {% else %}
+                        {{ mod.name|first|upper }}
+                        {% endif %}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-semibold text-gray-200 group-hover:text-green-400 transition-colors line-clamp-2 mb-1">
+                            {{ mod.name }}
+                        </h3>
+                        {% if mod.author %}
+                        <p class="text-sm text-gray-400 mb-2">by {{ mod.author }}</p>
+                        {% endif %}
+                        {% if mod.description %}
+                        <p class="text-gray-300 text-sm line-clamp-2">{{ mod.description }}</p>
+                        {% else %}
+                        <p class="text-gray-400 text-sm">Click to view details and download</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex items-center justify-between pt-3 border-t border-gray-600">
+                    <div class="flex items-center text-green-400 text-sm font-medium">
+                        View mod <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="mt-8 flex justify-center">
+        <nav class="flex items-center space-x-2">
+            {% if page_obj.has_previous %}
+            <a href="?q={{ query }}&category={{ selected_category }}&sort={{ sort_by }}&page={{ page_obj.previous_page_number }}" 
+               class="minecraft-button px-3 py-2 text-sm font-medium">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <span class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600">
+                    {{ num }}
+                </span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?q={{ query }}&category={{ selected_category }}&sort={{ sort_by }}&page={{ num }}" 
+                   class="minecraft-button px-3 py-2 text-sm font-medium">
+                    {{ num }}
+                </a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <a href="?q={{ query }}&category={{ selected_category }}&sort={{ sort_by }}&page={{ page_obj.next_page_number }}" 
+               class="minecraft-button px-3 py-2 text-sm font-medium">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <!-- No Results -->
+    <div class="text-center py-12">
+        <div class="text-gray-400 text-6xl mb-4">
+            <i class="fas fa-search"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-300 mb-2">No Results Found</h3>
+        <p class="text-gray-400 mb-6">Try adjusting your search terms or filters.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'mods:browse_all' %}" 
+               class="minecraft-button px-6 py-3 font-medium">
+                Browse All Mods
+            </a>
+            <a href="{% url 'mods:index' %}" 
+               class="minecraft-button px-6 py-3 font-medium">
+                Back to Home
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<!-- Search Tips -->
+<div class="minecraft-card border border-green-500 p-6">
+    <h3 class="text-lg font-semibold text-gray-200 mb-3">Search Tips</h3>
+    <ul class="text-gray-300 space-y-2">
+        <li><i class="fas fa-lightbulb mr-2"></i>Search by mod name, description, or author</li>
+        <li><i class="fas fa-filter mr-2"></i>Use category filters to narrow down results</li>
+        <li><i class="fas fa-sort mr-2"></i>Sort results by relevance, name, date, or version count</li>
+        <li><i class="fas fa-tags mr-2"></i>Try different keywords if you don't find what you're looking for</li>
+    </ul>
+</div>
+{% endif %}
+{% endblock %} 

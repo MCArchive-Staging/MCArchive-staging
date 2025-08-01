@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ mod.name }} - MC Mod Archive{% endblock %}
+
+{% block content %}
+<!-- Mod Header -->
+<div class="mb-8">
+    <nav class="text-sm text-gray-400 mb-4">
+        <a href="{% url 'mods:index' %}" class="hover:text-gray-300">Home</a>
+        <span class="mx-2">/</span>
+        <a href="{% url 'mods:browse_all' %}" class="hover:text-gray-300">Browse All</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-300">{{ mod.name }}</span>
+    </nav>
+    
+        <div class="minecraft-card p-6">
+        <div class="flex items-start mb-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl mr-6 flex-shrink-0">
+                {% if mod.logo %}
+                <img src="{{ mod.logo }}" alt="{{ mod.name }} logo" class="w-full h-full rounded-xl object-cover">
+                {% else %}
+                {{ mod.name|first|upper }}
+                {% endif %}
+            </div>
+            <div class="flex-1">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <h1 class="text-3xl font-bold text-gray-200">{{ mod.name }}</h1>
+                            <span class="text-gray-400 text-lg">by {{ mod.author|default:"Unknown" }}</span>
+                        </div>
+                        
+                        <!-- Statistics -->
+                        <div class="flex items-center space-x-6 text-sm text-gray-400">
+                            <div class="flex items-center">
+                                <i class="fas fa-eye mr-2"></i>
+                                <span>{{ mod.relevance_count }} views</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-download mr-2"></i>
+                                <span>{{ mod.download_count }} downloads</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-code-branch mr-2"></i>
+                                <span>{{ mod.versions.count }} versions</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'mods:edit_mod' mod.name %}" class="minecraft-button inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
+                        <i class="fas fa-edit mr-2"></i>
+                        Edit
+                    </a>
+                    {% endif %}
+                </div>
+                {% if mod.description %}
+                <p class="text-gray-300 leading-relaxed text-lg">{{ mod.description }}</p>
+                {% else %}
+                <p class="text-gray-500 italic">No description available</p>
+                {% endif %}
+            </div>
+        </div>
+ 
+    </div>
+</div>
+
+<!-- Versions Section -->
+<div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-200 mb-6">Available Versions</h2>
+    
+    {% if page_obj %}
+    <div class="minecraft-card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Version
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            File Name
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Platform
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Minecraft
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Date
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Download
+                        </th>
+                        {% if user.is_authenticated %}
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Actions
+                        </th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-800 divide-y divide-gray-600">
+                    {% for version in page_obj %}
+                    <tr class="hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm font-medium text-gray-200">{{ version.version_number }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-200 truncate max-w-xs" title="{{ version.file_name }}">
+                                {{ version.file_name }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if version.platform %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-600 text-white">
+                                {{ version.platform }}
+                            </span>
+                            {% else %}
+                            <span class="text-gray-400 text-sm">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if version.minecraft_version %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-600 text-white">
+                                {{ version.minecraft_version }}
+                            </span>
+                            {% else %}
+                            <span class="text-gray-400 text-sm">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                            {{ version.created_at|date:"M j, Y" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{% url 'mods:download_version' mod.name version.id %}" 
+                               target="_blank"
+                               class="minecraft-button inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md">
+                                <i class="fas fa-download mr-2"></i>
+                                Download
+                            </a>
+                        </td>
+                        {% if user.is_authenticated %}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{% url 'mods:edit_version' mod.name version.id %}" 
+                               class="inline-flex items-center px-3 py-2 border border-gray-500 text-sm leading-4 font-medium rounded-md text-gray-200 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <i class="fas fa-edit mr-2"></i>
+                                Edit
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="mt-6 flex justify-center">
+        <nav class="flex items-center space-x-2">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" 
+               class="minecraft-button px-3 py-2 text-sm font-medium rounded-lg">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <span class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg">
+                    {{ num }}
+                </span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}" 
+                   class="minecraft-button px-3 py-2 text-sm font-medium rounded-lg">
+                    {{ num }}
+                </a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" 
+               class="minecraft-button px-3 py-2 text-sm font-medium rounded-lg">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <!-- No Versions -->
+    <div class="text-center py-12 minecraft-card">
+        <div class="text-gray-400 text-6xl mb-4">
+            <i class="fas fa-file-archive"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-300 mb-2">No Versions Available</h3>
+        <p class="text-gray-400">No versions have been uploaded for this mod yet.</p>
+    </div>
+    {% endif %}
+</div>
+
+
+{% endblock %} 
