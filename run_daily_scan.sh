@@ -12,7 +12,7 @@ cd "$PROJECT_DIR"
 
 # Run the scan for new mods and versions
 echo "Running mod scan..." >> "$LOG_FILE"
-python3 manage.py scan_mods --continuous --interval 0 >> "$LOG_FILE" 2>&1
+python3 manage.py scan_mods --once >> "$LOG_FILE" 2>&1
 
 # Wait a moment for scan to complete
 sleep 5
