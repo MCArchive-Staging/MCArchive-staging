@@ -81,14 +81,14 @@
                 <div class="flex items-start mb-4">
                     <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg mr-4 flex-shrink-0">
                         {% if mod.logo %}
-                        <img src="{{ mod.logo }}" alt="{{ mod.name }} logo" class="w-full h-full object-cover mod-icon">
+                        <img src="{{ mod.logo }}" alt="{{ mod.name }} logo" class="w-full h-full object-cover">
                         {% else %}
                         {{ mod.name|first|upper }}
                         {% endif %}
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1">
-                            <h3 class="text-lg font-semibold text-gray-200 group-hover:text-green-400 transition-colors line-clamp-2">
+                        <div class="mb-1">
+                            <h3 class="text-lg font-semibold text-gray-200 group-hover:text-green-400 transition-colors line-clamp-2 mb-1">
                                 {{ mod.name }}
                             </h3>
                             <span class="text-sm text-gray-400">by {{ mod.author|default:"Unknown" }}</span>
